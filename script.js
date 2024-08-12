@@ -8,24 +8,49 @@ document.addEventListener('mousemove', (e) => {
     document.documentElement.style.setProperty('--mouseY', `${mouseY}%`);
 });
 
-// Project image movement
 
+// Move slide function
+
+const moveSlide = (projectImages) => {
+    const imageList = Array.from(projectImages);
+    const currentShowIndex = imageList.findIndex((image) => image.classList.contains("visible"));
+    const nextShowIndex = currentShowIndex + 1 === projectImages.length ? 0 : currentShowIndex + 1;
+    imageList[currentShowIndex].classList.add("hide");
+    imageList[currentShowIndex].classList.remove("visible");
+    setTimeout(() => {
+        imageList[currentShowIndex].classList.add("hidden");
+        imageList[nextShowIndex].classList.remove("hidden");
+        setTimeout(() => {
+            imageList[nextShowIndex].classList.remove("hide");
+            imageList[nextShowIndex].classList.add("visible");
+        }, 50);
+    }, 1000)
+}
+
+var showSlideIntervalId;
+
+// Project image movement
 const projects = document.querySelectorAll(".project_item_container");
 projects.forEach((project) => {
     let leftTopRect = project.getElementsByClassName("left_top_border").item(0);
     let bottomRightRect = project.getElementsByClassName("bottom_right_border").item(0);
-    let projectImage = project.getElementsByClassName("project_image").item(0);
+    let projectImageContainer = project.getElementsByClassName("project_image").item(0);
+    let projectImages = project.querySelectorAll("img");
 
     project.addEventListener('mouseover', (_e) => {
         leftTopRect.style.transform = "translate(-1rem, -1rem)";
         bottomRightRect.style.transform = "translate(1rem, 1rem)";
-        projectImage.style.transform = "scale(1.1)";
+        projectImageContainer.style.transform = "scale(1.1)";
+        showSlideIntervalId = setInterval(() => {
+            moveSlide(projectImages);
+        }, 3500)
     })
 
     project.addEventListener('mouseout', (_e) => {
         leftTopRect.style.transform = "translate(0, 0)";
         bottomRightRect.style.transform = "translate(0, 0)";
-        projectImage.style.transform = "scale(1)";
+        projectImageContainer.style.transform = "scale(1)";
+        clearInterval(showSlideIntervalId);
     })
 })
 
@@ -139,3 +164,12 @@ switchTopButtonElement.addEventListener('click', (_e) => {
         }
     })
 })
+
+// Download cv when click on download_cv button
+
+const downloadCVButton = document.querySelector(".dowload_cv_container");
+const downloadCVLink = document.getElementById("cv_download_link");
+downloadCVButton.addEventListener("click", (_e) => {
+    downloadCVLink.click();
+})
+
